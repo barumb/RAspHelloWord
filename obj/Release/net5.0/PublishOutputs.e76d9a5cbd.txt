@@ -1,0 +1,7 @@
+S:\loc\publish\RaspHelloWord\Properties\launchSettings.json
+S:\loc\publish\RaspHelloWord\RAspHelloWord.exe
+S:\loc\publish\RaspHelloWord\RAspHelloWord.dll
+S:\loc\publish\RaspHelloWord\RAspHelloWord.deps.json
+S:\loc\publish\RaspHelloWord\RAspHelloWord.runtimeconfig.json
+S:\loc\publish\RaspHelloWord\RAspHelloWord.pdb
+S:\loc\publish\RaspHelloWord\System.Device.Gpio.dll

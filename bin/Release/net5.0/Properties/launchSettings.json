@@ -1,0 +1,36 @@
+{
+  "configurations": [
+    {
+      "name": ".NET Core Launch (remote console)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "/home/pi/dotnet/dotnet",
+      "args": [ "/home/pi/RaspHelloword/RaspHelloword.dll" ],
+      "cwd": "/home/pi/RaspHelloword",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "pipeTransport": {
+        "pipeCwd": "${workspaceFolder}",
+        "pipeProgram": "C:\\Program Files\\PuTTY\\PLINK.EXE",
+        "pipeArgs": [
+          "-pw",
+          "raspbarumb",
+          "root@192.168.0.211"
+        ],
+        "debuggerPath": "/home/pi/vsdbg/vsdbg"
+      }
+    },
+    "profiles",
+    :,
+    {
+      "RAspHelloWord": {
+        "commandName": "Project",
+        "remoteDebugEnabled": true
+      },
+      "newProfile1": {
+        "commandName": "Executable",
+        "remoteDebugEnabled": false
+      }
+    }
+}

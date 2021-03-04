@@ -1,0 +1,6 @@
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\RAspHelloWord.exe
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\RAspHelloWord.dll
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\RAspHelloWord.deps.json
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\RAspHelloWord.runtimeconfig.json
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\RAspHelloWord.pdb
+S:\loc\src\RAspHelloWord\bin\Release\net5.0\publish\System.Device.Gpio.dll

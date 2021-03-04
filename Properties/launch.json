@@ -1,0 +1,28 @@
+﻿{
+  "version": "0.2.0",
+  "adapter": "C:\\Program Files\\PuTTY\\plink.exe",
+  "adapterArgs": "-i S:\\loc\\src\\key\\vsdevpi_openssh_expoldformat_privkey.ppk  root@192.168.0.211 -batch -T ~/vsdbg/vsdbg --interpreter=vscode",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (remote console)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "/home/pi/dotnet/dotnet",
+      "args": [ "/home/pi/apps/RaspHelloword/RaspHelloword.dll" ],
+      "cwd": "/home/pi/apps/RaspHelloword",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "pipeTransport": {
+        "pipeCwd": "${workspaceFolder}",
+        "pipeProgram": "${env:ChocolateyInstall}\\bin\\PLINK.EXE",
+        "pipeArgs": [
+          "-pw",
+          "raspbbarumb",
+          "root@192.168.0.211"
+        ],
+        "debuggerPath": "/home/pi/vsdbg/vsdbg"
+      }
+    }
+  ]
+}
