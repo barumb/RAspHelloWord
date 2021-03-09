@@ -62,6 +62,94 @@ namespace RaspHelloWord
 
         }
 
+        public string AuroraGetSerialNumber(byte Address)
+        {
+           byte[] AuroraQryMsg = new byte[8];  
+           byte[] frameOut = new byte[AuroraQryMsg.Length+2]  ; 
+           byte[] frameOut1 = new byte[AuroraQryMsg.Length+2]  ; 
+           
+           byte[] frameIn = new byte[24]  ; 
+           
+           byte[] frameIn1 = new byte[8]  ; 
+           byte[] frameIn2 = new byte[8]  ; 
+           byte[] frameIn3 = new byte[8]  ; 
+           
+           int dataReaded1 = 0;
+           int dataReaded2 = 0;
+           int dataReaded3 = 0;
+                    
+           byte[] _crc = new byte[2];
+           
+
+           
+//
+            //t.Wait(); // silence. for modbusRTU Must be > 3.5 * caracter time
+           
+           
+           Buffer.SetByte(AuroraQryMsg,0,Address);
+           //Buffer.SetByte(AuroraQryMsg,1,0x63);  // comando get serial number
+           Buffer.SetByte(AuroraQryMsg,1,0x3b);  // comando copiato  da un dump del sw power meter
+           Buffer.SetByte(AuroraQryMsg,2,0x16);  // comando copiato  da un dump del sw power meter
+           
+           //_crc = GetCrc16_X25(AuroraQryMsg);
+           _crc = CCITT_CRC16(AuroraQryMsg);
+           Buffer.BlockCopy(AuroraQryMsg, 0, frameOut1, 0, AuroraQryMsg.Length);
+           Buffer.BlockCopy(_crc, 0, frameOut1, AuroraQryMsg.Length, 2);
+
+           Buffer.BlockCopy(AuroraQryMsg, 0, frameOut, 0, AuroraQryMsg.Length);
+           Buffer.SetByte(frameOut,AuroraQryMsg.Length,0x9e);  // CrC copiato dal dump    
+           Buffer.SetByte(frameOut,AuroraQryMsg.Length+1,0x72);  // CrC copiato dal dump        
+           
+
+           // _setTrasmitMode();
+           var t1 = Task.Run(async delegate
+           {
+              await Task.Delay(20); // 20ms -> ~17byte@9600bps or 34byte@19200bps
+              return 42;
+           });
+           t1.Wait();
+          
+           //Task.Delay(200);   //questo non funziona
+            _rs485.Write(frameOut, 0, frameOut.Length );
+          
+           // _setReceiveMode();
+           try
+           {
+                var t2 = Task.Run(async delegate
+                {
+                   await Task.Delay(250); // attendo 250ms per dar tempo al dispositivo di rispondere
+                   return 42;
+                });
+                t2.Wait();
+          
+                dataReaded1 = _rs485.Read(frameIn1 , 0, frameIn1.Length);
+                //Task.Delay(500);
+                //Console.WriteLine("Lettura Nr 2");
+                //dataReaded2 = _rs485.Read(frameIn2 , 0, frameIn2.Length);
+                //Task.Delay(500);
+                //Console.WriteLine("Lettura Nr 3");
+                //dataReaded3 = _rs485.Read(frameIn3 , 0, frameIn3.Length);
+               
+                //byteReaded1 = _rs485.Read(frame1 , 0, frame1.Length);
+                //byteReaded2 = _rs485.Read(frame2 , 0, frame2.Length);
+                //
+                //int _i=0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Nessuna Risposta o Risposta fuori tempo massimo");
+            }
+
+            Buffer.BlockCopy(frameIn1,0,frameIn,0,dataReaded1);
+            //Buffer.BlockCopy(frameIn2,0,frameIn,dataReaded1,dataReaded2);
+            //Buffer.BlockCopy(frameIn3,0,frameIn,dataReaded1+dataReaded2,dataReaded3);
+            
+           
+           Console.WriteLine("DBG::> Inviato su rs485-USB >>>" + BitConverter.ToString(frameOut));
+           Console.WriteLine("DBG::> Ricevuto su rs485-USB >>>" + BitConverter.ToString(frameIn));
+           return frameIn.ToString();
+        }
+
 
         private byte[] SwitchMsbLsb(ushort Val16bit)
         {
@@ -128,7 +216,7 @@ public void sendTestAurora(byte IdDevice, byte Command)
             Buffer.BlockCopy(_crc, 0, send, 8, 2);
             _setTrasmitMode();
              _rs485.Write(send, 0, send.Length );
-            _setReceiveMode();
+            //_setReceiveMode();
             
             Console.WriteLine("485-USB Inviato Aurora Request:" + BitConverter.ToString(send));
 
@@ -156,7 +244,11 @@ public void sendTestAurora(byte IdDevice, byte Command)
         private byte[] _readModbusMsg(int pBufferLength=1024)
         {
              int byteReaded = 0;
+             int byteReaded1 =0;
+             int byteReaded2 =0;
             byte[] frame = new byte[pBufferLength];
+            byte[] frame1 = new byte[pBufferLength];
+            byte[] frame2 = new byte[pBufferLength];
             //_ns.ReadTimeout = (10000);
             
            _setReceiveMode();
@@ -164,17 +256,23 @@ public void sendTestAurora(byte IdDevice, byte Command)
             try
             {
                 // inserisco un ritardo per dare tempo di ricevere tutta la risposta
-                Task.Delay(200);
+                //Task.Delay(200);
                 byteReaded = _rs485.Read(frame , 0, frame.Length);
-            
+                byteReaded1 = _rs485.Read(frame1 , 0, frame1.Length);
+                byteReaded2 = _rs485.Read(frame2 , 0, frame2.Length);
+                
+                int _i=0;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Nessuna Risposta o Risposta fuori tempo massimo");
             }
 
-            byte[] fromdevice = new byte[byteReaded];
+            byte[] fromdevice = new byte[byteReaded+byteReaded1+byteReaded2];
             Buffer.BlockCopy(frame, 0, fromdevice, 0, byteReaded);
+            Buffer.BlockCopy(frame1, byteReaded , fromdevice, 0, byteReaded1);
+            Buffer.BlockCopy(frame2, byteReaded+byteReaded1, fromdevice, 0, byteReaded2);
+            
 
             //
             Console.WriteLine("485-USB Ricevuto:" + BitConverter.ToString(fromdevice));
@@ -244,5 +342,39 @@ public void sendTestAurora(byte IdDevice, byte Command)
 
             return new byte[] { crcRegister_L, crcRegister_H };
         }
+
+
+        // CRC16-X25 utilizzato dall'inverter Autora PowerOne
+        // Il metodo restituisce il CRC già con i MSB e LSB invertiti in modo da essere 
+        // pronto ad essere copiato nel frame da trasmettere
+        private byte[] CCITT_CRC16(byte[] dataMsg)
+        {
+                ushort data;
+                ushort crc = 0xFFFF;
+                
+
+                for (int j = 0; j < dataMsg.Length; j++)
+                {
+                    crc = (ushort)(crc ^ dataMsg[j]);
+                    for (int i = 0; i < 8; i++)
+                    {
+                        if ((crc & 0x0001) == 1)
+                            crc = (ushort)((crc >> 1) ^ 0x8408);
+                        else
+                            crc >>= 1;
+                    }
+                }
+                crc = (ushort)~crc;
+                data = crc;
+                crc = (ushort)((crc << 8) ^ (data >> 8 & 0xFF));
+                byte[] crcX25 = BitConverter.GetBytes(crc);
+                //inverto MSB e LSB
+                byte tmp = crcX25[0];
+                crcX25[0]=crcX25[1];
+                crcX25[1]= tmp;
+                return crcX25;
+                
+        }
+
     }
 }

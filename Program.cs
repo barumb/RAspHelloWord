@@ -23,8 +23,8 @@ namespace console1
             //Test05();   // Test lettura pulsante asincrona
             //Test06();   //lettura sonde + comando asincrono rele
             //Test07();     // RS485 by Ethernet (modbus)
-            //Test08();      // RS485 by ethernet inverter Aurora
-            Test09();       // RS485 Power meter OR-WE-515
+            Test08();      // RS485 by ethernet inverter Aurora
+            //Test09();       // RS485 Power meter OR-WE-515
             //Test10();      // Gruppo elettrogeno Sauro tramite Moxxa5604 
             //Test11();       // Usb->485 Power Meter OR-WE-515
             //Test12();       // Usb ->485 to 485/232-eth 
@@ -362,12 +362,20 @@ Serial485 _ornoWE515 = new Serial485("COM3", 9600, System.IO.Ports.Parity.None, 
         {
             //PowerMeter _ornoWE515 = new PowerMeter("192.168.0.237", 4001);
            
-
-            Serial485 com = new Serial485("COM3",9600,System.IO.Ports.Parity.Even, 8,System.IO.Ports.StopBits.One);
+            //aurora
+            Serial485 com = new Serial485("COM3",19200,System.IO.Ports.Parity.Even, 8,System.IO.Ports.StopBits.One);
+            //Serial485 com = new Serial485("COM3",9600,System.IO.Ports.Parity.Even, 8,System.IO.Ports.StopBits.One);
             //ModbusRtu net = new ModbusRtu("192.168.0.237", 4001);
 
 
-           
+
+            // read voltage
+            //byte[] Cmd = new byte[7] { 63, 0, 0, 0, 0, 0, 0 };
+            Task.Delay(200);
+            com.sendTestAurora(0x02,0x63);
+            //Task.Delay(200);
+            com.ReadModbusMsg();
+            return;
 
             Task.Delay(200);    
             // read voltage
@@ -477,33 +485,18 @@ Serial485 _ornoWE515 = new Serial485("COM3", 9600, System.IO.Ports.Parity.None, 
 
         public static void Test08()
         {
-            AuroraPwrOneInverter _inverter = new AuroraPwrOneInverter("192.168.0.236", 4001);
-
-            _inverter.CmdDbg(0x02);
-            _inverter.ReadDbg();
-
-            _inverter.CmdDSPGridPower(0x2);
-            _inverter.ReadDSPValue();
-
-            _inverter.CmdReadSN(0x2);
-            _inverter.ReadSn();
-
-             Console.WriteLine("Test Aurora PowerOne");
-    
-             Serial485 com = new Serial485("COM3",19200,System.IO.Ports.Parity.None, 8,System.IO.Ports.StopBits.One);
-             //ModbusRtu net = new ModbusRtu("192.168.0.237", 4001);
-             //Aurora
-             // read PN
-             com.sendTestAurora(0x02,0x52);
-             com.ReadModbusMsg();
-   
-    //
-     //Serial485 com = new Serial485("COM3",19200,System.IO.Ports.Parity.None, 8,System.IO.Ports.StopBits.One);
-    //com.sendTestAurora(0x02,0x52);
-    //com.ReadModbusMsg();
-    
+             //aurora
+            Serial485 com = new Serial485("COM3",19200,System.IO.Ports.Parity.None, 8,System.IO.Ports.StopBits.One);
+            //Serial485 com = new Serial485("COM3",9600,System.IO.Ports.Parity.Even, 8,System.IO.Ports.StopBits.One);
+            //ModbusRtu net = new ModbusRtu("192.168.0.237", 4001);
 
 
+
+            com.AuroraGetSerialNumber(0x02);
+            return;
+
+
+            
         }
 
         //Lettura dati da inverter tramite RS485 utilizzando un convertirore RS485-Eth con rete di polarizzazione
