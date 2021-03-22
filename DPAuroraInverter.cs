@@ -43,9 +43,54 @@ namespace RaspHelloWord
         
         byte[] answer = myDev.QueryDevice(frame); 
         
-        value=BitConverter.ToSingle(answer,1);  // 
+        value= myDev.BytesToSingle(answer,1);
         return value;
       }
+
+      public Single ReadCurrent()
+      {
+        Single value;
+        byte[] rawValue = new byte[4];
+        byte[] CRC = new byte[2];
+        byte[] msg = new byte[lenAuroraCmd];
+        byte[] frame = new byte[lenAuroraCmd+2];
+        // comando
+        msg[0] = targetAddress;
+        msg[1] = ;// comando
+
+        Buffer.BlockCopy(msg,0,frame,0,msg.Length);
+        Buffer.BlockCopy(CRC,0,frame,msg.Length,CRC.Length);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,1);
+        return value;
+      }
+
+      public Single ReadVoltage(bool Global=false)
+      {
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+        byte[] rawValue = new byte[4];
+        byte[] CRC = new byte[2];
+        byte[] msg = new byte[lenAuroraCmd];
+        byte[] frame = new byte[lenAuroraCmd+2];
+        // comando
+        msg[0] = targetAddress;
+        msg[1] = 59;// comando
+        msg[2] = 1;
+        msg[3] = _global;
+
+        Buffer.BlockCopy(msg,0,frame,0,msg.Length);
+        Buffer.BlockCopy(CRC,0,frame,msg.Length,CRC.Length);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,1);
+        return value;
+      }
+
 
 
 

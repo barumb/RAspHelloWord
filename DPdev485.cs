@@ -17,7 +17,7 @@ namespace RaspHelloWord
         public abstract byte[] QueryDevice (byte[] pSendFrame);
 
 
-        private Single BytesToSingle(byte[] Buffer, int StartIndex)
+        public virtual Single BytesToSingle(byte[] Buffer, int StartIndex)
         {
             byte[] _internal = new byte[4];
             _internal[3]= Buffer[StartIndex +0];
