@@ -4,6 +4,8 @@ using System.Device.Gpio;
 using System.Threading;
 using System.Threading.Tasks;
 using RaspHelloWord;
+//add
+using System.IO.Ports;
 
 namespace console1
 {
@@ -29,6 +31,8 @@ namespace console1
             //Test11();       // Usb->485 Power Meter OR-WE-515
             //Test12();       // Usb ->485 to 485/232-eth 
             //Lab13(); // send by rs485 an receive on rs485-rth2
+            //Lab14();   // Abstact Facroty for device
+
         }
 
 
@@ -79,6 +83,21 @@ namespace console1
             return PinvalueSwitch;
 
         }
+
+public static void Lab14()
+{
+    int lenqrymsg=10;
+    DPbusFactory myBus = new DPbusETHFactory();
+    DPdev485 myDevice = myBus.CreateDev485(19200,Parity.None,8,StopBits.One,"COM3");
+    byte[] qrymsg = new byte[lenqrymsg];
+    byte[] crc = new byte[2];
+    crc = myDevice.Modbus_Crc16(qrymsg);
+    byte[] sndFrame = new byte[lenqrymsg+2];
+    
+    byte[] risp = myDevice.QueryDevice(qrymsg);
+}
+
+
 
 public static void Lab13()
 {
@@ -489,10 +508,22 @@ Serial485 _ornoWE515 = new Serial485("COM3", 9600, System.IO.Ports.Parity.None, 
             Serial485 com = new Serial485("COM3",19200,System.IO.Ports.Parity.None, 8,System.IO.Ports.StopBits.One);
             //Serial485 com = new Serial485("COM3",9600,System.IO.Ports.Parity.Even, 8,System.IO.Ports.StopBits.One);
             //ModbusRtu net = new ModbusRtu("192.168.0.237", 4001);
+            byte[] value;
+           
 
 
+            value=com.AuroraGetSerialNumber(0x02);
 
-            com.AuroraGetSerialNumber(0x02);
+            for (int i=0; i<200 ; i++)
+            {
+            value=com.AuroraGetGridVoltage(0x2, true);
+            Console.WriteLine("Tensione= " + BytesToSingle(value,2).ToString() + " V"); 
+            value=com.AuroraGetGridCurrent(0x2, true);
+            Console.WriteLine("Corrente= " + BytesToSingle(value,2).ToString() + " A"); 
+            
+            value=com.AuroraGetGridPower(0x2,true);
+            Console.WriteLine("Potenza= " + BytesToSingle(value,2).ToString() + " W"); 
+            }
             return;
 
 
@@ -1026,11 +1057,23 @@ Serial485 _ornoWE515 = new Serial485("COM3", 9600, System.IO.Ports.Parity.None, 
             }
 
         }
+ public static Single BytesToSingle(byte[] Buffer, int StartIndex)
+        {
+
+            if ((Buffer.Length - StartIndex) < 4) return -1;
+
+            byte[] _internal = new byte[4];
+            _internal[3]= Buffer[StartIndex +0];
+            _internal[2]= Buffer[StartIndex +1];
+            _internal[1]= Buffer[StartIndex +2];
+            _internal[0]= Buffer[StartIndex +3];
+
+            return BitConverter.ToSingle(_internal);
+
+        }
+
 
     }
-
-
-
 
 
 }

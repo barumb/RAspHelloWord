@@ -62,46 +62,17 @@ namespace RaspHelloWord
 
         }
 
-        public string AuroraGetSerialNumber(byte Address)
+        private byte[] _qrydevice(byte[] sndMsg)
         {
-           byte[] AuroraQryMsg = new byte[8];  
-           byte[] frameOut = new byte[AuroraQryMsg.Length+2]  ; 
-           byte[] frameOut1 = new byte[AuroraQryMsg.Length+2]  ; 
-           
-           byte[] frameIn = new byte[24]  ; 
-           
-           byte[] frameIn1 = new byte[8]  ; 
-           byte[] frameIn2 = new byte[8]  ; 
-           byte[] frameIn3 = new byte[8]  ; 
-           
-           int dataReaded1 = 0;
-           int dataReaded2 = 0;
-           int dataReaded3 = 0;
-                    
-           byte[] _crc = new byte[2];
-           
-
-           
-//
-            //t.Wait(); // silence. for modbusRTU Must be > 3.5 * caracter time
-           
-           
-           Buffer.SetByte(AuroraQryMsg,0,Address);
-           //Buffer.SetByte(AuroraQryMsg,1,0x63);  // comando get serial number
-           Buffer.SetByte(AuroraQryMsg,1,0x3b);  // comando copiato  da un dump del sw power meter
-           Buffer.SetByte(AuroraQryMsg,2,0x16);  // comando copiato  da un dump del sw power meter
-           
-           //_crc = GetCrc16_X25(AuroraQryMsg);
-           _crc = CCITT_CRC16(AuroraQryMsg);
-           Buffer.BlockCopy(AuroraQryMsg, 0, frameOut1, 0, AuroraQryMsg.Length);
-           Buffer.BlockCopy(_crc, 0, frameOut1, AuroraQryMsg.Length, 2);
-
-           Buffer.BlockCopy(AuroraQryMsg, 0, frameOut, 0, AuroraQryMsg.Length);
-           Buffer.SetByte(frameOut,AuroraQryMsg.Length,0x9e);  // CrC copiato dal dump    
-           Buffer.SetByte(frameOut,AuroraQryMsg.Length+1,0x72);  // CrC copiato dal dump        
-           
-
-           // _setTrasmitMode();
+            byte[] _rcvFrame = new byte[1024];
+            byte[] _sndFrame = new byte[ sndMsg.Length+2]; // quando invio unico address e sndMsg + devo aggiungere il CRC
+            byte[] crc = new byte[2]; 
+            byte[] _rcvMsg = null;
+            int _nrByteReaded;
+            crc = CCITT_CRC16(sndMsg); // il calcolo de CRC restituisce già il LSB  su crc[0] e MSB su CRC[1] 
+            Buffer.BlockCopy(sndMsg,0,_sndFrame,0,sndMsg.Length);
+            Buffer.BlockCopy(crc,0,_sndFrame,sndMsg.Length,2);
+             // _setTrasmitMode();
            var t1 = Task.Run(async delegate
            {
               await Task.Delay(20); // 20ms -> ~17byte@9600bps or 34byte@19200bps
@@ -110,44 +81,113 @@ namespace RaspHelloWord
            t1.Wait();
           
            //Task.Delay(200);   //questo non funziona
-            _rs485.Write(frameOut, 0, frameOut.Length );
-          
-           // _setReceiveMode();
-           try
+             _rs485.Write(_sndFrame, 0, _sndFrame.Length );
+            // Console.WriteLine("Inviato: " + BitConverter.ToString(_sndFrame));
+
+        try
            {
                 var t2 = Task.Run(async delegate
                 {
                    await Task.Delay(250); // attendo 250ms per dar tempo al dispositivo di rispondere
                    return 42;
                 });
-                t2.Wait();
+                t2.Wait();  // diamo tempo al device di rispondere. Forse andrebbe parametrizzato
           
-                dataReaded1 = _rs485.Read(frameIn1 , 0, frameIn1.Length);
-                //Task.Delay(500);
-                //Console.WriteLine("Lettura Nr 2");
-                //dataReaded2 = _rs485.Read(frameIn2 , 0, frameIn2.Length);
-                //Task.Delay(500);
-                //Console.WriteLine("Lettura Nr 3");
-                //dataReaded3 = _rs485.Read(frameIn3 , 0, frameIn3.Length);
-               
-                //byteReaded1 = _rs485.Read(frame1 , 0, frame1.Length);
-                //byteReaded2 = _rs485.Read(frame2 , 0, frame2.Length);
-                //
-                //int _i=0;
-            }
+                _nrByteReaded= _rs485.Read(_rcvFrame , 0, _rcvFrame.Length);
+                _rcvMsg = new byte[_nrByteReaded];
+                Buffer.BlockCopy(_rcvFrame,0,_rcvMsg,0,_nrByteReaded);
+               // Console.WriteLine("Ricevuto " + _nrByteReaded.ToString() + " bytes: " + BitConverter.ToString(_rcvMsg));
+
+             }
             catch (Exception ex)
             {
                 Console.WriteLine("Nessuna Risposta o Risposta fuori tempo massimo");
             }
+            if (_rcvMsg==null) _rcvMsg= new byte[1]{0x0};
 
-            Buffer.BlockCopy(frameIn1,0,frameIn,0,dataReaded1);
-            //Buffer.BlockCopy(frameIn2,0,frameIn,dataReaded1,dataReaded2);
-            //Buffer.BlockCopy(frameIn3,0,frameIn,dataReaded1+dataReaded2,dataReaded3);
+            return _rcvMsg;
+
+        }
+
+
+        public byte[] AuroraGetGridPower(byte Address, bool Global=false)
+        {
+             byte[] AuroraQryMsg = new byte[8];
+            byte _global=0;
+             if (Global==true) _global=1;
+
+             Buffer.SetByte(AuroraQryMsg,0,Address);
+             Buffer.SetByte(AuroraQryMsg,1,59);  //CMD
+             Buffer.SetByte(AuroraQryMsg,2,3);  //PAR1
+             Buffer.SetByte(AuroraQryMsg,3,_global);  //PAR1
+             
+             byte[] _deviceresponse = _qrydevice(AuroraQryMsg);
             
+             Console.WriteLine("response: " + BitConverter.ToString(_deviceresponse));
+             return _deviceresponse;
+        }
+
+        private Single BytesToSingle(byte[] Buffer, int StartIndex)
+        {
+            byte[] _internal = new byte[4];
+            _internal[3]= Buffer[StartIndex +0];
+            _internal[2]= Buffer[StartIndex +1];
+            _internal[1]= Buffer[StartIndex +2];
+            _internal[0]= Buffer[StartIndex +3];
+
+            return BitConverter.ToSingle(_internal);
+
+        }
+        public byte[] AuroraGetGridVoltage(byte Address, bool Global=false)
+        {
+             byte[] AuroraQryMsg = new byte[8];
+             byte _global=0;
+             if (Global==true) _global=1;
+
+             Buffer.SetByte(AuroraQryMsg,0,Address);
+             Buffer.SetByte(AuroraQryMsg,1,59);  //CMD
+             Buffer.SetByte(AuroraQryMsg,2,1);  //PAR1
+             Buffer.SetByte(AuroraQryMsg,3,_global);  //PAR1
+             
+             byte[] _deviceresponse = _qrydevice(AuroraQryMsg);
+             
+
+             Console.WriteLine("response: " + BitConverter.ToString(_deviceresponse)  + " Tensione=" + this.BytesToSingle(_deviceresponse,2).ToString()+" V");
+             
+                
+             return _deviceresponse;
+        }
+
+         public byte[] AuroraGetGridCurrent(byte Address, bool Global=false)
+        {
+             byte[] AuroraQryMsg = new byte[8];
+             byte _global=0;
+             if (Global==true) _global=1;
+
+             Buffer.SetByte(AuroraQryMsg,0,Address);
+             Buffer.SetByte(AuroraQryMsg,1,59);  //CMD
+             Buffer.SetByte(AuroraQryMsg,2,2);  //PAR1
+             Buffer.SetByte(AuroraQryMsg,3,_global);  //PAR1
+             
+             byte[] _deviceresponse = _qrydevice(AuroraQryMsg);
+            
+             Console.WriteLine("response: " + BitConverter.ToString(_deviceresponse));
+             return _deviceresponse;
+        }
+
+        
+        public byte[] AuroraGetSerialNumber(byte Address)
+        {
+            byte[] AuroraQryMsg = new byte[8];
+             
+
+             Buffer.SetByte(AuroraQryMsg,0,Address);
+             Buffer.SetByte(AuroraQryMsg,1,63);  //CMD
            
-           Console.WriteLine("DBG::> Inviato su rs485-USB >>>" + BitConverter.ToString(frameOut));
-           Console.WriteLine("DBG::> Ricevuto su rs485-USB >>>" + BitConverter.ToString(frameIn));
-           return frameIn.ToString();
+             byte[] _deviceresponse = _qrydevice(AuroraQryMsg);
+            
+             Console.WriteLine("response: " + BitConverter.ToString(_deviceresponse));
+             return _deviceresponse;
         }
 
 
