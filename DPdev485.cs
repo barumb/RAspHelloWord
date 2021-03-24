@@ -27,6 +27,26 @@ namespace RaspHelloWord
 
             return BitConverter.ToSingle(_internal);
         }
+        
+        public virtual Single BytesToUint16(byte[] Buffer, int StartIndex)
+        {
+            byte[] _internal = new byte[2];
+            _internal[1]= Buffer[StartIndex +0];
+            _internal[0]= Buffer[StartIndex +1];
+
+            return BitConverter.ToUInt16(_internal);
+        }
+
+        public virtual Single BytesToUint32(byte[] Buffer, int StartIndex)
+        {
+            byte[] _internal = new byte[4];
+            _internal[3]= Buffer[StartIndex +0];
+            _internal[2]= Buffer[StartIndex +1];
+            _internal[1]= Buffer[StartIndex +2];
+            _internal[0]= Buffer[StartIndex +3];
+
+            return BitConverter.ToUInt32(_internal);
+        }
 
         public virtual  byte[] SwitchMsbLsb(ushort Val16bit)
         {

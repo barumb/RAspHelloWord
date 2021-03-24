@@ -25,13 +25,13 @@ namespace console1
             //Test05();   // Test lettura pulsante asincrona
             //Test06();   //lettura sonde + comando asincrono rele
             //Test07();     // RS485 by Ethernet (modbus)
-            Test08();      // RS485 by ethernet inverter Aurora
+            //Test08();      // RS485 by ethernet inverter Aurora
             //Test09();       // RS485 Power meter OR-WE-515
             //Test10();      // Gruppo elettrogeno Sauro tramite Moxxa5604 
             //Test11();       // Usb->485 Power Meter OR-WE-515
             //Test12();       // Usb ->485 to 485/232-eth 
             //Lab13(); // send by rs485 an receive on rs485-rth2
-            //Lab14();   // Abstact Facroty for device
+            Lab14();   // Abstact Facroty for device
 
         }
 
@@ -86,15 +86,36 @@ namespace console1
 
 public static void Lab14()
 {
-    int lenqrymsg=10;
-    DPbusFactory myBus = new DPbusETHFactory();
-    DPdev485 myDevice = myBus.CreateDev485(19200,Parity.None,8,StopBits.One,"COM3");
-    byte[] qrymsg = new byte[lenqrymsg];
-    byte[] crc = new byte[2];
-    crc = myDevice.Modbus_Crc16(qrymsg);
-    byte[] sndFrame = new byte[lenqrymsg+2];
+    DPbusFactory myBusUSB = new DPbusUSBFactory();
+    DPAuroraInverter _inverterUSB = new DPAuroraInverter(myBusUSB, 2,19200,Parity.Even,8,StopBits.One, "COM3");
+    _inverterUSB.ReadFrequency();
+    _inverterUSB.ReadGridPower();
+    _inverterUSB.CumulateTotalEnergy();
+    _inverterUSB.CumulateCurrentDayEnergy();
+    _inverterUSB.ReadGridCurrent();
+    _inverterUSB.ReadGridVoltage();
     
-    byte[] risp = myDevice.QueryDevice(qrymsg);
+    DPOrnoWE515 _powerMeterUSB = new DPOrnoWE515(myBusUSB,1,9600,Parity.None,8,StopBits.One,"COM3");
+    _powerMeterUSB.ReadActivePower();
+    _powerMeterUSB.ReadVoltage();
+    _powerMeterUSB.ReadCurrent();
+
+
+    DPbusFactory myBusEth = new DPbusETHFactory();
+    DPAuroraInverter _inverterEth = new DPAuroraInverter(myBusEth, 2,19200,Parity.Even,8,StopBits.One, "192.168.0.232",4001);
+    _inverterEth.ReadFrequency();
+    _inverterEth.ReadGridPower();
+    _inverterEth.CumulateTotalEnergy();
+    _inverterEth.CumulateCurrentDayEnergy();
+    _inverterEth.ReadGridCurrent();
+    _inverterEth.ReadGridVoltage();
+
+    DPOrnoWE515 _powerMeterEth = new DPOrnoWE515(myBusEth,1,9600,Parity.None,8,StopBits.One,"192.168.0.232",4001);
+    _powerMeterEth.ReadActivePower();
+    _powerMeterEth.ReadVoltage();
+    _powerMeterEth.ReadCurrent();
+
+
 }
 
 

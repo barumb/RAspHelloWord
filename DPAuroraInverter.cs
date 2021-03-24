@@ -15,83 +15,169 @@ namespace RaspHelloWord
        private int lenAuroraCmd; //lunghezza comando escluso CRC
        public DPAuroraInverter(DPbusFactory BusFactory, byte address, int baudRate,  Parity parity, int dataBits, StopBits stopBits, string COMorIP="", int port=0,int lenSndBuffer=32,int lenRecBuffer=32 )
        {
-           lenAuroraCmd=8
+           lenAuroraCmd=8;
            targetAddress=address;
            myDev = BusFactory.CreateDev485(baudRate,parity, dataBits ,stopBits, COMorIP, port, lenSndBuffer, lenRecBuffer);
        }
 
 
-      public byte[] QueryDevice( byte[] frame)
+      //public byte[] QueryDevice( byte[] frame)
+      //{
+      //   byte[] _buff=  myDev.QueryDevice(frame);
+      //   return _buff;
+      //}
+      private byte[] _BuildFrame(byte[] AuroraCmd)
       {
-         byte[] _buff=  myDev.QueryDevice(frame);
-         return _buff;
-      }
-
-      public Single ReadPower()
-      {
-        Single value;
-        byte[] rawValue = new byte[4];
+        
         byte[] CRC = new byte[2];
-        byte[] msg = new byte[lenAuroraCmd];
+        
         byte[] frame = new byte[lenAuroraCmd+2];
         // comando
-        msg[0] = targetAddress;
-        msg[1] = ;// comando
-
-        Buffer.BlockCopy(msg,0,frame,0,msg.Length);
-        Buffer.BlockCopy(CRC,0,frame,msg.Length,CRC.Length);
-        
-        byte[] answer = myDev.QueryDevice(frame); 
-        
-        value= myDev.BytesToSingle(answer,1);
-        return value;
+        CRC=myDev.CCITT_CRC16(AuroraCmd);
+        Buffer.BlockCopy(AuroraCmd,0,frame,0,AuroraCmd.Length);
+               
+        Buffer.BlockCopy(CRC,0,frame,AuroraCmd.Length,CRC.Length);
+        return frame;    
+                  
       }
 
-      public Single ReadCurrent()
+      
+
+       public Single CumulateTotalEnergy(bool Global=false)
       {
-        Single value;
         byte[] rawValue = new byte[4];
-        byte[] CRC = new byte[2];
-        byte[] msg = new byte[lenAuroraCmd];
-        byte[] frame = new byte[lenAuroraCmd+2];
-        // comando
-        msg[0] = targetAddress;
-        msg[1] = ;// comando
-
-        Buffer.BlockCopy(msg,0,frame,0,msg.Length);
-        Buffer.BlockCopy(CRC,0,frame,msg.Length,CRC.Length);
-        
-        byte[] answer = myDev.QueryDevice(frame); 
-        
-        value= myDev.BytesToSingle(answer,1);
-        return value;
-      }
-
-      public Single ReadVoltage(bool Global=false)
-      {
         byte _global=0;
         if (Global==true) _global=1;
         Single value;
-        byte[] rawValue = new byte[4];
-        byte[] CRC = new byte[2];
-        byte[] msg = new byte[lenAuroraCmd];
-        byte[] frame = new byte[lenAuroraCmd+2];
-        // comando
-        msg[0] = targetAddress;
-        msg[1] = 59;// comando
-        msg[2] = 1;
-        msg[3] = _global;
 
-        Buffer.BlockCopy(msg,0,frame,0,msg.Length);
-        Buffer.BlockCopy(CRC,0,frame,msg.Length,CRC.Length);
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 68; // comando per leggere DSP
+        cmd[2]= 6;   // 
+
+        cmd[5]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
         
         byte[] answer = myDev.QueryDevice(frame); 
         
-        value= myDev.BytesToSingle(answer,1);
+        value= myDev.BytesToSingle(answer,3);
+        return value;
+
+      }
+
+        public Single CumulateCurrentDayEnergy(bool Global=false)
+      {
+        byte[] rawValue = new byte[4];
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 68; // comando per leggere DSP
+        cmd[2]= 1;   // 
+
+        cmd[5]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,3);
+        return value;
+
+      }
+
+
+      
+      public Single ReadGridCurrent(bool Global=false)
+      {
+        byte[] rawValue = new byte[4];
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 59; // comando per leggere DSP
+        cmd[2]= 2;   // Tipo di valore letto dal DSP. 
+        cmd[3]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,3);
+        return value;
+      }
+      public Single ReadGridPower(bool Global=false)
+      {
+        byte[] rawValue = new byte[4];
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 59; // comando per leggere DSP
+        cmd[2]= 3;   // Tipo di valore letto dal DSP. 
+        cmd[3]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,3);
         return value;
       }
 
 
+      public Single ReadGridVoltage(bool Global=false)
+      {
+        byte[] rawValue = new byte[4];
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 59; // comando per leggere DSP
+        cmd[2]= 1;   // Tipo di valore letto dal DSP. 1=GridVoltage
+        cmd[3]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,3);
+        return value;
+      }
+
+      public Single ReadFrequency(bool Global=false)
+      {
+        byte[] rawValue = new byte[4];
+        byte _global=0;
+        if (Global==true) _global=1;
+        Single value;
+
+        byte[] cmd = new byte[lenAuroraCmd];
+        cmd[0]= targetAddress;
+        cmd[1]= 59; // comando per leggere DSP
+        cmd[2]= 4;   // Tipo di valore letto dal DSP
+        cmd[3]= _global;
+
+        byte[] frame = _BuildFrame(cmd);
+        
+        byte[] answer = myDev.QueryDevice(frame); 
+        
+        value= myDev.BytesToSingle(answer,3);
+        return value;
+      }
+
+
+
+     
 
 
 
