@@ -91,18 +91,20 @@ public static void Lab15()
     DPdev485byUSB _GE485 = new DPdev485byUSB(9600, Parity.None, 8, StopBits.One,"COM3");
 
 
-     //_sauroGE.sendRaw(serialSTART);
-     //_sauroGE.ReadModbusMsg();
-     byte[] cmdMmodbusRTU = new byte[8] { 0x01, 0x03, 0x00, 0x42, 0x00, 0x10, 0xe4, 0x12 };
+            //_sauroGE.sendRaw(serialSTART);
+            //_sauroGE.ReadModbusMsg();
+            //byte[] cmdMmodbusRTU = new byte[8] { 0x01, 0x03, 0x00, 0x42, 0x00, 0x10, 0xe4, 0x12 };
+            byte[] cmdMmodbusRTU = new byte[6] { 0x01, 0x03, 0x00, 0x42, 0x00, 0x10 };
             byte[] CRC = _GE485.Modbus_Crc16(cmdMmodbusRTU);
-     byte[] frame = new byte[10];
+     byte[] frame = new byte[cmdMmodbusRTU.Length+CRC.Length];
 
-     Buffer.BlockCopy(CRC, 0, frame, cmdMmodbusRTU.Length + 1, 2);
+     Buffer.BlockCopy(cmdMmodbusRTU, 0, frame, 0, cmdMmodbusRTU.Length );
+     Buffer.BlockCopy(CRC, 0, frame, cmdMmodbusRTU.Length, CRC.Length);
 
 
-     Console.WriteLine("TO URB:>>{0}", frame.ToString());
+     Console.WriteLine("TO URB:>>{0}", BitConverter.ToString(frame));
      byte[] _response = _GE485.QueryDevice(frame);
-     Console.WriteLine("From URB:>>{0}",_response.ToString());
+     Console.WriteLine("From URB:>>{0}", BitConverter.ToString(_response));
      
 }
 

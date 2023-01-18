@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QISdOM6Iep3vDrj85ULL9NZP0ad0V3nRUFI4koW+EqzFEuuy+3VwIp+Igez3cYwJZo4a/RcgC8GnVeKUKEq00w==",
+  "dgSpecHash": "4MGVjAM+zXWlLSN0nwOWxW+eN3+XKI0NzmPFhtyJJ4VQOAcPtLpPCta13+f6bR6CpwzF4rYvxq4rIJwO8BF8Cw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
+  "projectFilePath": "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\barumb\\.nuget\\packages\\log4net\\2.0.12\\log4net.2.0.12.nupkg.sha512",
     "C:\\Users\\barumb\\.nuget\\packages\\microsoft.extensions.configuration\\5.0.0\\microsoft.extensions.configuration.5.0.0.nupkg.sha512",

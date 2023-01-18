@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {}
+    "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj": {}
   },
   "projects": {
-    "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {
+    "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
+        "projectUniqueName": "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj",
         "projectName": "RaspHelloWord",
-        "projectPath": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
+        "projectPath": "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj",
         "packagesPath": "C:\\Users\\barumb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\obj\\",
+        "outputPath": "S:\\loc\\source\\RAspHelloWord\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
