@@ -31,8 +31,8 @@ namespace console1
             //Test11();       // Usb->485 Power Meter OR-WE-515
             //Test12();       // Usb ->485 to 485/232-eth 
             //Lab13(); // send by rs485 an receive on rs485-rth2
-            Lab14();   // Abstact Facroty for device
-
+            //Lab14();   // Abstact Facroty for device
+            Lab15();   // Abstact Factory for GE by serial
         }
 
 
@@ -83,6 +83,28 @@ namespace console1
             return PinvalueSwitch;
 
         }
+
+public static void Lab15()
+{
+    DPbusFactory myBusUSB = new DPbusUSBFactory();
+    //DPOrnoWE515 _powerMeterUSB = new DPOrnoWE515(myBusUSB, 1, 9600, Parity.None, 8, StopBits.One, "COM3");
+    DPdev485byUSB _GE485 = new DPdev485byUSB(9600, Parity.None, 8, StopBits.One,"COM3");
+
+
+     //_sauroGE.sendRaw(serialSTART);
+     //_sauroGE.ReadModbusMsg();
+     byte[] cmdMmodbusRTU = new byte[8] { 0x01, 0x03, 0x00, 0x42, 0x00, 0x10, 0xe4, 0x12 };
+            byte[] CRC = _GE485.Modbus_Crc16(cmdMmodbusRTU);
+     byte[] frame = new byte[10];
+
+     Buffer.BlockCopy(CRC, 0, frame, cmdMmodbusRTU.Length + 1, 2);
+
+
+     Console.WriteLine("TO URB:>>{0}", frame.ToString());
+     byte[] _response = _GE485.QueryDevice(frame);
+     Console.WriteLine("From URB:>>{0}",_response.ToString());
+     
+}
 
 public static void Lab14()
 {

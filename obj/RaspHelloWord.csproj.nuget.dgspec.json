@@ -1,23 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "S:\\loc\\src\\vsCode\\RAspHelloWord\\RaspHelloWord.csproj": {}
+    "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {}
   },
   "projects": {
-    "S:\\loc\\src\\vsCode\\RAspHelloWord\\RaspHelloWord.csproj": {
+    "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "S:\\loc\\src\\vsCode\\RAspHelloWord\\RaspHelloWord.csproj",
+        "projectUniqueName": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
         "projectName": "RaspHelloWord",
-        "projectPath": "S:\\loc\\src\\vsCode\\RAspHelloWord\\RaspHelloWord.csproj",
-        "packagesPath": "C:\\Users\\umbi\\.nuget\\packages\\",
-        "outputPath": "S:\\loc\\src\\vsCode\\RAspHelloWord\\obj\\",
+        "projectPath": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
+        "packagesPath": "C:\\Users\\barumb\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\barumb\\Source\\Repos\\barumb\\RAspHelloWord\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\umbi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\barumb\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -26,6 +29,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -63,7 +67,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -72,7 +77,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
