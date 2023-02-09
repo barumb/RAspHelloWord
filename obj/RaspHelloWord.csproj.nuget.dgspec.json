@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj": {}
+    "C:\\Users\\umbi\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {}
   },
   "projects": {
-    "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj": {
+    "C:\\Users\\umbi\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj",
+        "projectUniqueName": "C:\\Users\\umbi\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
         "projectName": "RaspHelloWord",
-        "projectPath": "S:\\loc\\source\\RAspHelloWord\\RaspHelloWord.csproj",
-        "packagesPath": "C:\\Users\\barumb\\.nuget\\packages\\",
-        "outputPath": "S:\\loc\\source\\RAspHelloWord\\obj\\",
+        "projectPath": "C:\\Users\\umbi\\Source\\Repos\\barumb\\RAspHelloWord\\RaspHelloWord.csproj",
+        "packagesPath": "C:\\Users\\umbi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\umbi\\Source\\Repos\\barumb\\RAspHelloWord\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\barumb\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\umbi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
